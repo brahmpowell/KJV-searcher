@@ -1,0 +1,9 @@
+# pdf files
+*.pdf
+
+# pycaches
+__pycache__/
+
+# weird files
+_DS_Store
+__.DS_Store
