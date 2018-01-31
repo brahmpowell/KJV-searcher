@@ -1,6 +1,6 @@
 # ReadMe
 
-A simple (King James) Bible searching algorithm written entirely in Python.
+A simple (King James) Bible searching algorithm written entirely in Python.  Written in 2015 as a practice project for advancing in Python.
 
 Currently designed for command line use in a Python shell.
 
@@ -15,5 +15,5 @@ Running `Function_scripts/Search_Functions.py` while in a Python shell in the ba
 ### TODO:
 Create a GUI.
 Fix case-sensitivity for all-caps use of LORD.
-Analyze memory usage, possibly change search method to live file reading instead of file loading (this may be slower, however)
+Analyze memory usage, possibly change search method to live file reading instead of file loading (this may be slower, however).
 Fix context printing in `findW()`.
