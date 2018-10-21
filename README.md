@@ -17,3 +17,4 @@ Create a GUI.
 Fix case-sensitivity for all-caps use of LORD.
 Analyze memory usage, possibly change search method to live file reading instead of file loading (this may be slower, however).
 Fix context printing in `findW()`.
+Avoid printing individual verses in separate `print` calls.

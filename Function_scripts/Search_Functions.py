@@ -92,74 +92,10 @@ Book_names = ['Genesis',
 'Revelation']
 
 Bible = {}
-Bible['Genesis'] = np.load('Genesis_V1.npy')
-Bible['Exodus'] = np.load('Exodus_V1.npy')
-Bible['Leviticus'] = np.load('Leviticus_V1.npy')
-Bible['Numbers'] = np.load('Numbers_V1.npy')
-Bible['Deuteronomy'] = np.load('Deuteronomy_V1.npy')
-Bible['Joshua'] = np.load('Joshua_V1.npy')
-Bible['Judges'] = np.load('Judges_V1.npy')
-Bible['Ruth'] = np.load('Ruth_V1.npy')
-Bible['I_Samuel'] = np.load('I_Samuel_V1.npy')
-Bible['II_Samuel'] = np.load('II_Samuel_V1.npy')
-Bible['I_Kings'] = np.load('I_Kings_V1.npy')
-Bible['II_Kings'] = np.load('II_Kings_V1.npy')
-Bible['I_Chronicles'] = np.load('I_Chronicles_V1.npy')
-Bible['II_Chronicles'] = np.load('II_Chronicles_V1.npy')
-Bible['Ezra'] = np.load('Ezra_V1.npy')
-Bible['Nehemiah'] = np.load('Nehemiah_V1.npy')
-Bible['Esther'] = np.load('Esther_V1.npy')
-Bible['Job'] = np.load('Job_V1.npy')
-Bible['Psalms'] = np.load('Psalms_V1.npy')
-Bible['Proverbs'] = np.load('Proverbs_V1.npy')
-Bible['Ecclesiastes'] = np.load('Ecclesiastes_V1.npy')
-Bible['Song_of_Solomon'] = np.load('Song_of_Solomon_V1.npy')
-Bible['Isaiah'] = np.load('Isaiah_V1.npy')
-Bible['Jeremiah'] = np.load('Jeremiah_V1.npy')
-Bible['Lamentations'] = np.load('Lamentations_V1.npy')
-Bible['Ezekiel'] = np.load('Ezekiel_V1.npy')
-Bible['Daniel'] = np.load('Daniel_V1.npy')
-Bible['Hosea'] = np.load('Hosea_V1.npy')
-Bible['Joel'] = np.load('Joel_V1.npy')
-Bible['Amos'] = np.load('Amos_V1.npy')
-Bible['Obadiah'] = np.load('Obadiah_V1.npy')
-Bible['Jonah'] = np.load('Jonah_V1.npy')
-Bible['Micah'] = np.load('Micah_V1.npy')
-Bible['Nahum'] = np.load('Nahum_V1.npy')
-Bible['Habakkuk'] = np.load('Habakkuk_V1.npy')
-Bible['Zephaniah'] = np.load('Zephaniah_V1.npy')
-Bible['Haggai'] = np.load('Haggai_V1.npy')
-Bible['Zechariah'] = np.load('Zechariah_V1.npy')
-Bible['Malachi'] = np.load('Malachi_V1.npy')
-Bible['Matthew'] = np.load('Matthew_V1.npy')
-Bible['Mark'] = np.load('Mark_V1.npy')
-Bible['Luke'] = np.load('Luke_V1.npy')
-Bible['John'] = np.load('John_V1.npy')
-Bible['Acts'] = np.load('Acts_V1.npy')
-Bible['Romans'] = np.load('Romans_V1.npy')
-Bible['I_Corinthians'] = np.load('I_Corinthians_V1.npy')
-Bible['II_Corinthians'] = np.load('II_Corinthians_V1.npy')
-Bible['Galatians'] = np.load('Galatians_V1.npy')
-Bible['Ephesians'] = np.load('Ephesians_V1.npy')
-Bible['Philippians'] = np.load('Philippians_V1.npy')
-Bible['Colossians'] = np.load('Colossians_V1.npy')
-Bible['I_Thessalonians'] = np.load('I_Thessalonians_V1.npy')
-Bible['II_Thessalonians'] = np.load('II_Thessalonians_V1.npy')
-Bible['I_Timothy'] = np.load('I_Timothy_V1.npy')
-Bible['II_Timothy'] = np.load('II_Timothy_V1.npy')
-Bible['Titus'] = np.load('Titus_V1.npy')
-Bible['Philemon'] = np.load('Philemon_V1.npy')
-Bible['Hebrews'] = np.load('Hebrews_V1.npy')
-Bible['James'] = np.load('James_V1.npy')
-Bible['I_Peter'] = np.load('I_Peter_V1.npy')
-Bible['II_Peter'] = np.load('II_Peter_V1.npy')
-Bible['I_John'] = np.load('I_John_V1.npy')
-Bible['II_John'] = np.load('II_John_V1.npy')
-Bible['III_John'] = np.load('III_John_V1.npy')
-Bible['Jude'] = np.load('Jude_V1.npy')
-Bible['Revelation'] = np.load('Revelation_V1.npy')
-
-
+version = 'V1'
+for book_name in Book_names:
+    Bible[book_name] = np.load(book_name + '_' + version + '.npy')
+    
 
 def findW(words,casesensitive=False,context=False):
     """
@@ -176,7 +112,14 @@ def findW(words,casesensitive=False,context=False):
             word_array.append('')
         else:
             word_array[-1] += element
-            
+
+    # change apostrophes?
+    for i in range(len(word_array)):
+        word = word_array[i]
+        if "'" in word:
+            word_split = word.split("'")
+            word = u"\u2019".join(word_split)
+            word_array[i] = word
     
     # analyze words if upper/lowercase does not matter
     if casesensitive == False:
@@ -193,11 +136,11 @@ def findW(words,casesensitive=False,context=False):
             # create lowercase word
             word = LowercaseLetter + RestOfWord
             words.append(word)
-        #print(words)
-        #print(Words)
+        # print(words)
+        # print(Words)
     else:
         words = word_array
-        #print(words)
+        # print(words)
             
 
     verses_containing_words = 0
@@ -238,7 +181,7 @@ def findW(words,casesensitive=False,context=False):
                             contains = False
                             
                     word_index += 1
-                
+
                 if contains == True:
                     verses_containing_words += 1
                     total_verse = verse_writeout(Verse)
