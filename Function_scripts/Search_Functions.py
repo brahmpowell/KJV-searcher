@@ -25,71 +25,72 @@ os.chdir(dir_to_book_arrays)
 # search them by going:
 #    Bible['BookName'][chapter#-1][verse#]
 Book_names = ['Genesis',
-'Exodus',
-'Leviticus',
-'Numbers',
-'Deuteronomy',
-'Joshua',
-'Judges',
-'Ruth',
-'I_Samuel',
-'II_Samuel',
-'I_Kings',
-'II_Kings',
-'I_Chronicles',
-'II_Chronicles',
-'Ezra',
-'Nehemiah',
-'Esther',
-'Job',
-'Psalms',
-'Proverbs',
-'Ecclesiastes',
-'Song_of_Solomon',
-'Isaiah',
-'Jeremiah',
-'Lamentations',
-'Ezekiel',
-'Daniel',
-'Hosea',
-'Joel',
-'Amos',
-'Obadiah',
-'Jonah',
-'Micah',
-'Nahum',
-'Habakkuk',
-'Zephaniah',
-'Haggai',
-'Zechariah',
-'Malachi',
-'Matthew',
-'Mark',
-'Luke',
-'John',
-'Acts',
-'Romans',
-'I_Corinthians',
-'II_Corinthians',
-'Galatians',
-'Ephesians',
-'Philippians',
-'Colossians',
-'I_Thessalonians',
-'II_Thessalonians',
-'I_Timothy',
-'II_Timothy',
-'Titus',
-'Philemon',
-'Hebrews',
-'James',
-'I_Peter',
-'II_Peter',
-'I_John',
-'II_John',
-'III_John',
-'Jude',
-'Revelation']
+    'Exodus',
+    'Leviticus',
+    'Numbers',
+    'Deuteronomy',
+    'Joshua',
+    'Judges',
+    'Ruth',
+    'I_Samuel',
+    'II_Samuel',
+    'I_Kings',
+    'II_Kings',
+    'I_Chronicles',
+    'II_Chronicles',
+    'Ezra',
+    'Nehemiah',
+    'Esther',
+    'Job',
+    'Psalms',
+    'Proverbs',
+    'Ecclesiastes',
+    'Song_of_Solomon',
+    'Isaiah',
+    'Jeremiah',
+    'Lamentations',
+    'Ezekiel',
+    'Daniel',
+    'Hosea',
+    'Joel',
+    'Amos',
+    'Obadiah',
+    'Jonah',
+    'Micah',
+    'Nahum',
+    'Habakkuk',
+    'Zephaniah',
+    'Haggai',
+    'Zechariah',
+    'Malachi',
+    'Matthew',
+    'Mark',
+    'Luke',
+    'John',
+    'Acts',
+    'Romans',
+    'I_Corinthians',
+    'II_Corinthians',
+    'Galatians',
+    'Ephesians',
+    'Philippians',
+    'Colossians',
+    'I_Thessalonians',
+    'II_Thessalonians',
+    'I_Timothy',
+    'II_Timothy',
+    'Titus',
+    'Philemon',
+    'Hebrews',
+    'James',
+    'I_Peter',
+    'II_Peter',
+    'I_John',
+    'II_John',
+    'III_John',
+    'Jude',
+    'Revelation'
+]
 
 Bible = {}
 version = 'V1'
@@ -97,7 +98,7 @@ for book_name in Book_names:
     Bible[book_name] = np.load(book_name + '_' + version + '.npy')
     
 
-def findW(words,casesensitive=False,context=False):
+def findW(words,casesensitive=False,context=False,bk=None):
     """
     Used to locate instances of words in the Bible.
     input words must be a single string, with words separated by spaces.
@@ -147,8 +148,31 @@ def findW(words,casesensitive=False,context=False):
     verses_containing_extra_words = 0
     occurrences = 0
     
+    # search entire Bible, or one book, or multiple books
+    if bk is None:
+        # If no book is specified, search entire Bible
+        books_to_go_through = Book_names
+    elif type(bk) == list:
+        # If a list of books is specified, search those books
+        books_to_go_through = bk
+        for bkk in books_to_go_through:
+            if bkk not in Book_names:
+                print(bkk + ' not found in the books of the Bible.')
+                return
+    elif type(bk) == str:
+        # If a single string is entered, check if it is a book, or the entire new/old testament
+        books_to_go_through = [bk]
+        if bk not in Book_names:
+            if bk in ('ot', 'OT'):
+                books_to_go_through = Book_names[:39]
+            elif bk in ('nt', 'NT'):
+                books_to_go_through = Book_names[39:]
+            else:
+                print(bk + ' not found in the books of the Bible.')
+                return
+
     # go through books of the Bible
-    for book_name in Book_names:
+    for book_name in books_to_go_through:
         Book = Bible[book_name]
         
         # go through each chapter
@@ -193,7 +217,6 @@ def findW(words,casesensitive=False,context=False):
 
 
 
-
 def ref_and_verse(Book, Chapter, Verse, printing=True, saveit=False, ref_str=False):
     
     """
@@ -206,6 +229,7 @@ def ref_and_verse(Book, Chapter, Verse, printing=True, saveit=False, ref_str=Fal
     
     
     #ref = 
+
 
 
 def v(Book_Chapter_Verses,printing=True,saveit=False):
@@ -268,7 +292,7 @@ def verse(Book_Chapter_Verse,printing=True,saveit=False):
         if saveit == True:
             return the_verse
     except KeyError:
-            print('-!-!-!-!- This verse does not exist, unless there is a bug somewhere.  Please try again.')
+        print('-!-!-!-!- This verse does not exist, unless there is a bug somewhere.  Please try again.')
     
 
 
@@ -323,7 +347,16 @@ def verse_writeout(Verse):
     return total_verse
     
     
-    
+def print_books():
+    """Prints out the book names used."""
+    print('\nOLD TESTAMENT:')
+    print(Book_names[:39])
+    print('\nNEW TESTAMENT:')
+    print(Book_names[39:])
+    print('')
+
+
+
 #Bible = {'Psalms':Psalms , 'Proverbs':Proverbs}
 #print([key for key,value in sentences.items()])
 
