@@ -12,9 +12,14 @@ import os
 from timeit import default_timer as tc
 
 old_dir = os.getcwd()
-end_of_parent_dir = old_dir.index('Concordance')
-parent_dir = old_dir[:end_of_parent_dir]
-dir_to_book_arrays = parent_dir + 'Concordance_V1//Book_arrays'
+try:
+    end_of_parent_dir = old_dir.index('Concordance')
+    parent_dir = old_dir[:end_of_parent_dir]
+    dir_to_book_arrays = parent_dir + 'Concordance_V1//Book_arrays'
+except:
+    end_of_parent_dir = old_dir.index('KJV-searcher')
+    parent_dir = old_dir[:end_of_parent_dir]
+    dir_to_book_arrays = parent_dir + 'KJV-searcher/Book_arrays'
 
 os.chdir(dir_to_book_arrays)
 
