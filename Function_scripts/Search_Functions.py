@@ -100,7 +100,7 @@ Book_names = ['Genesis',
 Bible = {}
 version = 'V1'
 for book_name in Book_names:
-    Bible[book_name] = np.load(book_name + '_' + version + '.npy')
+    Bible[book_name] = np.load(book_name + '_' + version + '.npy', allow_pickle=True)
     
 
 def findW(words,casesensitive=False,context=False,bk=None):
