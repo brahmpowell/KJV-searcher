@@ -2,7 +2,7 @@
 """
 Created on Sat Sep  5 17:56:52 2015
 
-@author: Tommy
+@author: Brahm Powell
 """
 
 
@@ -11,17 +11,13 @@ import numpy as np
 import os
 from timeit import default_timer as tc
 
-old_dir = os.getcwd()
-try:
-    end_of_parent_dir = old_dir.index('Concordance')
-    parent_dir = old_dir[:end_of_parent_dir]
-    dir_to_book_arrays = parent_dir + 'Concordance_V1//Book_arrays'
-except:
-    end_of_parent_dir = old_dir.index('KJV-searcher')
-    parent_dir = old_dir[:end_of_parent_dir]
-    dir_to_book_arrays = parent_dir + 'KJV-searcher/Book_arrays'
-
-os.chdir(dir_to_book_arrays)
+def pjoin(*paths):
+    paths = [p for p in paths if p != '']
+    if len(paths) > 0:
+        joined = os.path.join(*paths)
+    else:
+        joined = ''
+    return joined
 
 # NOTE:  Bible books are in Bible like:
 #    Bible = {'Book':[{'v#':[each_word_string]}]}
@@ -100,13 +96,24 @@ Book_names = ['Genesis',
 Bible = {}
 version = 'V1'
 for book_name in Book_names:
-    Bible[book_name] = np.load(book_name + '_' + version + '.npy', allow_pickle=True)
+    fname = book_name + '_' + version + '.npy'
+    fpath = pjoin('Book_arrays', fname)
+    Bible[book_name] = np.load(fpath, allow_pickle=True)
     
 
-def findW(words,casesensitive=False,context=False,bk=None):
+def findW(words, casesensitive=False, context=False, bk=None):
     """
     Used to locate instances of words in the Bible.
-    input words must be a single string, with words separated by spaces.
+    Input words must be a single string, with words separated by spaces.
+    Args:
+        words:          (string) Single space-separated string of words to find (verse must contain all words)
+        casesensitive:  (bool, default False) Whether to respect letter capitalizations
+        context:        (bool, default False) Whether to search verses "in context"
+        bk:             (optional) Options for restricting search to certain parts of the Bible.
+            None - searches entire Bible
+            'OT' - searches Old Testament only
+            'NT' - searches New Testament only
+            list - a list of books to search through
     """
     t0 = tc()
     
@@ -168,9 +175,9 @@ def findW(words,casesensitive=False,context=False,bk=None):
         # If a single string is entered, check if it is a book, or the entire new/old testament
         books_to_go_through = [bk]
         if bk not in Book_names:
-            if bk in ('ot', 'OT'):
+            if bk.upper() == 'OT':
                 books_to_go_through = Book_names[:39]
-            elif bk in ('nt', 'NT'):
+            elif bk.upper() == 'NT':
                 books_to_go_through = Book_names[39:]
             else:
                 print(bk + ' not found in the books of the Bible.')
@@ -237,7 +244,7 @@ def ref_and_verse(Book, Chapter, Verse, printing=True, saveit=False, ref_str=Fal
 
 
 
-def v(Book_Chapter_Verses,printing=True,saveit=False):
+def v(Book_Chapter_Verses, printing=True, saveit=False):
     """
     Used to simplify process of selecting verse or verses
     """
@@ -248,7 +255,7 @@ def v(Book_Chapter_Verses,printing=True,saveit=False):
         
         
     
-def verse(Book_Chapter_Verse,printing=True,saveit=False):
+def verse(Book_Chapter_Verse, printing=True, saveit=False):
     
     """
     Convert (Book_Chapter_Verse) to format that Python understands for 
@@ -361,11 +368,43 @@ def print_books():
     print('')
 
 
+def count():
+    """Count number of chapters, verses in Bible."""
+
+    print('BOOK : NUM_CHAPTERS NUM_VERSES')
+    num_chapters = {book_name: 0 for book_name in Book_names}
+    num_verses   = {book_name: 0 for book_name in Book_names}
+
+    # go through books of the Bible
+    for book_name in Book_names:
+        Book = Bible[book_name]
+        
+        # go through each chapter
+        for chapter_index in range(len(Book)):
+            num_chapters[book_name] += 1
+            chapter_number = chapter_index + 1
+            Chapter = Book[chapter_index]
+            
+            # go through each verse
+            for verse_name,Verse in Chapter.items():
+                num_verses[book_name] += 1
+
+        print(book_name, ':', num_chapters[book_name], num_verses[book_name])
+
+    num_chapters = [num_chapters[book_name] for book_name in Book_names]
+    num_verses   = [num_verses[book_name]   for book_name in Book_names]
+    print('Total :', sum(num_chapters), sum(num_verses))
+
+
+
+
+
+
 
 #Bible = {'Psalms':Psalms , 'Proverbs':Proverbs}
 #print([key for key,value in sentences.items()])
 
 print('All books have been successfully imported.')
-print('To print a verse, enter: v("Book Chapter:Verse")')
-print('       or verses, enter: v("Book Chapter:Begin,End")')
-print('To search for words, enter: findW("word")')
+print('To display a verse: v("Book Chapter:Verse")')
+print('         or verses: v("Book Chapter:Begin,End")')
+print('To search for words: findW("word")')
