@@ -248,7 +248,12 @@ def v(Book_Chapter_Verses, printing=True, saveit=False):
     """
     Used to simplify process of selecting verse or verses
     """
-    if ',' in Book_Chapter_Verses:
+    data = Book_Chapter_Verses.split(':')
+    if len(data) == 1:
+        verses(Book_Chapter_Verses)
+    elif data[1] == '':
+        verses(Book_Chapter_Verses)
+    elif ',' in data[1]:
         verses(Book_Chapter_Verses)
     else:
         verse(Book_Chapter_Verses,printing=True,saveit=False)
@@ -307,44 +312,73 @@ def verse(Book_Chapter_Verse, printing=True, saveit=False):
         print('-!-!-!-!- This verse does not exist, unless there is a bug somewhere.  Please try again.')
     
 
+# def verses(Book_Chapter_Verses):
+#     """
+#     return multiple verses in a row.
+#     input as 'BookName Chapter:Begin,End'
+#     """
+    
+#     # check each element until ':' is reached to determine book name
+#     index = 0
+#     element = Book_Chapter_Verses[index]
+#     while element != ':':
+#         index += 1
+#         element = Book_Chapter_Verses[index]
+    
+#     # extract book name
+#     Book_Chapter = Book_Chapter_Verses[0:index]
+    
+#     # check each element until ',' is reached to determine 1st verse 
+#     indexB = index + 1
+#     element = Book_Chapter_Verses[indexB]
+#     while element != ',':
+#         indexB += 1
+#         element = Book_Chapter_Verses[indexB]
+    
+#     # extract first verse
+#     Begin = Book_Chapter_Verses[index+1:indexB]
+#     BeginNumber = int(Begin)
+    
+#     # extract last verse
+#     End = Book_Chapter_Verses[indexB+1:]
+#     EndNumber = int(End) + 1
+    
+#     # print the verses
+#     for i in range(BeginNumber,EndNumber):
+#         print('    (' + Book_Chapter + ':%d)'%i)
+#         verse(Book_Chapter + ':%d'%i)
 
 def verses(Book_Chapter_Verses):
     """
     return multiple verses in a row.
     input as 'BookName Chapter:Begin,End'
+    or       'BookName Chapter:'
     """
-    
-    # check each element until ':' is reached to determine book name
-    index = 0
-    element = Book_Chapter_Verses[index]
-    while element != ':':
-        index += 1
-        element = Book_Chapter_Verses[index]
-    
-    # extract book name
-    Book_Chapter = Book_Chapter_Verses[0:index]
-    
-    # check each element until ',' is reached to determine 1st verse 
-    indexB = index + 1
-    element = Book_Chapter_Verses[indexB]
-    while element != ',':
-        indexB += 1
-        element = Book_Chapter_Verses[indexB]
-    
-    # extract first verse
-    Begin = Book_Chapter_Verses[index+1:indexB]
-    BeginNumber = int(Begin)
-    
-    # extract last verse
-    End = Book_Chapter_Verses[indexB+1:]
-    EndNumber = int(End) + 1
-    
-    # print the verses
-    for i in range(BeginNumber,EndNumber):
+
+    # Split Book_Chapter data from verse data
+    data = Book_Chapter_Verses.split(':')
+    Book_Chapter = data[0]
+    Verses_range = data[1] if len(data) > 1 else ''
+
+    # If no verses specified, print all verses in chapter
+    if Verses_range == '':
+        Book_Chapter_split = Book_Chapter.split(' ')
+        Book = Book_Chapter_split[0]
+        Chapter = int(Book_Chapter_split[1])
+        Begin = 1
+        End = len(Bible[Book][Chapter-1]) + 1
+    else:
+        # Get beginning and end verses indices
+        Begin_End = Verses_range.split(',')
+        Begin = int(Begin_End[0])
+        End   = int(Begin_End[1]) + 1
+
+    # Print out each verse
+    for i in range(Begin,End):
         print('    (' + Book_Chapter + ':%d)'%i)
         verse(Book_Chapter + ':%d'%i)
 
-    
+
     
 def verse_writeout(Verse):
     # write out verse as continuous string
@@ -374,6 +408,8 @@ def count():
     print('BOOK : NUM_CHAPTERS NUM_VERSES')
     num_chapters = {book_name: 0 for book_name in Book_names}
     num_verses   = {book_name: 0 for book_name in Book_names}
+    book_name_chars = [len(book_name) for book_name in Book_names]
+    blank_slate = ['-' for _ in range(max(book_name_chars) + 2)]
 
     # go through books of the Bible
     for book_name in Book_names:
@@ -389,7 +425,12 @@ def count():
             for verse_name,Verse in Chapter.items():
                 num_verses[book_name] += 1
 
-        print(book_name, ':', num_chapters[book_name], num_verses[book_name])
+        num_chars = len(book_name)
+        bk_printable = list(blank_slate)
+        bk_printable[:num_chars+2] = [el for el in book_name+' -']
+        bk_printable = ''.join(bk_printable)
+        #print(book_name, ':', num_chapters[book_name], num_verses[book_name])
+        print(bk_printable, num_chapters[book_name], num_verses[book_name])
 
     num_chapters = [num_chapters[book_name] for book_name in Book_names]
     num_verses   = [num_verses[book_name]   for book_name in Book_names]
