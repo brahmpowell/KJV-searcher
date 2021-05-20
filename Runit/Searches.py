@@ -25,7 +25,8 @@ def pjoin(*paths):
 #        Book = [{},{},{}]
 # search them by going:
 #    Bible['BookName'][chapter#-1][verse#]
-Book_names = ['Genesis',
+Book_names = [
+    'Genesis',
     'Exodus',
     'Leviticus',
     'Numbers',
@@ -238,9 +239,6 @@ def ref_and_verse(Book, Chapter, Verse, printing=True, saveit=False, ref_str=Fal
     
     # write out verse
     the_verse = verse(Book, Chapter, Verse, printing=False, saveit=True)
-    
-    
-    #ref = 
 
 
 
@@ -250,12 +248,16 @@ def v(Book_Chapter_Verses, printing=True, saveit=False):
     """
     data = Book_Chapter_Verses.split(':')
     if len(data) == 1:
+        # Book name and chapter specified - print entire chapter
         verses(Book_Chapter_Verses)
     elif data[1] == '':
+        # Book name and chapter specified - print entire chapter
         verses(Book_Chapter_Verses)
     elif ',' in data[1]:
+        # Book name and multiple verses specified - print verse range
         verses(Book_Chapter_Verses)
     else:
+        # Book name and single verse specified - print single verse 
         verse(Book_Chapter_Verses,printing=True,saveit=False)
         
         
@@ -434,6 +436,12 @@ def count():
 
     num_chapters = [num_chapters[book_name] for book_name in Book_names]
     num_verses   = [num_verses[book_name]   for book_name in Book_names]
+    num_chapters_OT = num_chapters[:39]
+    num_chapters_NT = num_chapters[39:]
+    num_verses_OT   = num_verses[:39]
+    num_verses_NT   = num_verses[39:]
+    print('OT    :', sum(num_chapters_OT), sum(num_verses_OT))
+    print('NT    :', sum(num_chapters_NT), sum(num_verses_NT))
     print('Total :', sum(num_chapters), sum(num_verses))
 
 
