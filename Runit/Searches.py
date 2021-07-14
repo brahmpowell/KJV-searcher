@@ -19,6 +19,31 @@ def pjoin(*paths):
         joined = ''
     return joined
 
+def try_index(Verse, vals):
+    """
+    Helper function.
+    Used to find (if possible) indices of words in a list.
+    """
+    inds = []
+    for word_str in vals:
+        if word_str in Verse:
+            inds.append(Verse.index(word_str))
+    return inds
+
+def strip_punct(Verse):
+    """
+    Strip punctuation and brackets from verse.
+    """
+    def str_replace(w):
+        for p in punctuation_plus:
+            w = w.replace(p, "")
+        return w
+    new_verse = [str_replace(w) for w in Verse]
+    new_verse = [w for w in new_verse if w != ""]
+    return new_verse
+
+
+
 # NOTE:  Bible books are in Bible like:
 #    Bible = {'Book':[{'v#':[each_word_string]}]}
 #    Bible = {'Genesis':Book, 'Exodus':Book2, ...}
@@ -93,23 +118,37 @@ Book_names = [
     'Jude',
     'Revelation'
 ]
+alphabet = 'abcdefghijklmnopqrstuvwxyz'
+punctuation = '!():;.,?'
+punctuation_plus = punctuation + '[]'
 
 Bible = {}
+Bible_searchable = {}
 version = 'V1'
 for book_name in Book_names:
     fname = book_name + '_' + version + '.npy'
     fpath = pjoin('Book_arrays', fname)
     Bible[book_name] = np.load(fpath, allow_pickle=True)
+    Bible_searchable[book_name] = []
+    Book = Bible[book_name]
+    for chapter_index in range(len(Book)):
+        Chapter = Book[chapter_index]
+        Chapter = {verse_name:strip_punct(EntireVerse) for verse_name,EntireVerse in Chapter.items()}
+        Bible_searchable[book_name].append(Chapter)
     
 
-def findW(words, casesensitive=False, context=False, bk=None):
+def findW(words, casesensitive=False, context=False, ordered=0, bk=None):
     """
     Used to locate instances of words in the Bible.
     Input words must be a single string, with words separated by spaces.
     Args:
         words:          (string) Single space-separated string of words to find (verse must contain all words)
         casesensitive:  (bool, default False) Whether to respect letter capitalizations
-        context:        (bool, default False) Whether to search verses "in context"
+        context:        (bool, default False) Whether to search verses "in context" (NotImplemented)
+        ordered:        (int, default 0) Whether to search for words properly ordered
+            0 - Order does not matter
+            1 - Words should be in order, but need not be consecutive
+            2 - Words should be in order and consecutive (NotImplemented)
         bk:             (optional) Options for restricting search to certain parts of the Bible.
             None - searches entire Bible
             'OT' - searches Old Testament only
@@ -186,7 +225,7 @@ def findW(words, casesensitive=False, context=False, bk=None):
 
     # go through books of the Bible
     for book_name in books_to_go_through:
-        Book = Bible[book_name]
+        Book = Bible_searchable[book_name]
         
         # go through each chapter
         for chapter_index in range(len(Book)):
@@ -194,34 +233,48 @@ def findW(words, casesensitive=False, context=False, bk=None):
             Chapter = Book[chapter_index]
             
             # go through each verse
-            for verse_name,Verse in Chapter.items():
+            for verse_name,EntireVerse in Chapter.items():
+
+                # In case words should be matched in order, store a copy of the verse
+                Verse = EntireVerse
 
                 # check to see if each word is in the verse
                 word_index = 0
                 contains = True
                 contains_added = True
-                while contains == True and word_index < len(words):
+                while contains and word_index < len(words):
                     
                     # If upper/lowercase is unimportant...
                     if casesensitive == False:
                         word = words[word_index]
                         Word = Words[word_index]
                         # Is word in verse? (also check non-original tongues)
-                        if word not in Verse and Word not in Verse and '[%s]'%word not in Verse and '[%s]'%Word not in Verse:
+                        # THIS NEEDS TO BE IMPROVED BECAUSE PUNCTUATION IN NON_ORIGINAL TONGUES GETS MESSY
+                        #   (see Matthew 1:19, for example)
+                        if (word not in Verse) and (Word not in Verse):
                             contains = False
+                        elif ordered != 0:
+                            # If word is in verse, and order is important, let subsequent calls only search the rest of the verse
+                            split_index = min(try_index(Verse, [word, Word]))
+                            Verse = Verse[split_index+1:]
                             
                     # If upper/lowercase is important...
                     elif casesensitive == True:
                         word = words[word_index]
                         # Is word in verse? (also check non-original tongues)
-                        if word not in Verse and '[%s]'%word not in Verse:
+                        if word not in Verse:
                             contains = False
+                        elif ordered != 0:
+                            # If word is in verse, and order is important, let subsequent calls only search the rest of the verse
+                            split_index = Verse.index(word)
+                            Verse = Verse[split_index+1:]
                             
                     word_index += 1
 
                 if contains == True:
                     verses_containing_words += 1
-                    total_verse = verse_writeout(Verse)
+                    ActualVerse = Bible[book_name][chapter_index][verse_name]
+                    total_verse = verse_writeout(ActualVerse)
                     print(book_name,chapter_number,':',verse_name)
                     print('    ',total_verse)
     tf = tc()
