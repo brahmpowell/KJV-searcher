@@ -249,13 +249,13 @@ def findW(words, casesensitive=False, context=False, ordered=0, bk=None):
                         word = words[word_index]
                         Word = Words[word_index]
                         # Is word in verse? (also check non-original tongues)
-                        # THIS NEEDS TO BE IMPROVED BECAUSE PUNCTUATION IN NON_ORIGINAL TONGUES GETS MESSY
-                        #   (see Matthew 1:19, for example)
                         if (word not in Verse) and (Word not in Verse):
                             contains = False
                         elif ordered != 0:
                             # If word is in verse, and order is important, let subsequent calls only search the rest of the verse
                             split_index = min(try_index(Verse, [word, Word]))
+                            if (ordered == 2) and (word_index != 0) and (split_index != 0):
+                                contains = False
                             Verse = Verse[split_index+1:]
                             
                     # If upper/lowercase is important...
@@ -267,6 +267,8 @@ def findW(words, casesensitive=False, context=False, ordered=0, bk=None):
                         elif ordered != 0:
                             # If word is in verse, and order is important, let subsequent calls only search the rest of the verse
                             split_index = Verse.index(word)
+                            if (ordered == 2) and (word_index != 0) and (split_index != 0):
+                                contains = False
                             Verse = Verse[split_index+1:]
                             
                     word_index += 1
