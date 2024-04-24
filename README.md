@@ -15,7 +15,11 @@ To see the exact notation used for each book name, execute `print_books()`.
 ### TODO:
 - [ ] Create a GUI.
 - [ ] Fix case-sensitivity for all-caps use of LORD.
+- [ ] Fix italicized word detection/printing.  See Deut 1:17 for an example.
+- [ ] Make sure searching for italicized words works properly.
 - [ ] Analyze memory usage, possibly change search method to live file reading instead of file loading (this may be slower, however).
 - [x] Capability to search a single chapter, or multiple chapters, or one testament at a time.
 - [ ] Fix context printing in `findW()`.
+- [ ] Fix `ordered=2` case when the first word to be searched occurrs multiple times in a verse and the phrase of interest does not correcpond to the first instance.  For example, `findW('I shall', ordered=2)` will not find Philippians 2:23 - "Him therefore _I hope_ to send presently, so soon as _I shall_ see how it will go with me."
+- [ ] Fix something (idk what) that causes `findW("king of kings", ordered=2)` to not detect Dan 2:37, but removing `ordered=2` works.  Maybe a punctuation issue? (actually, probably related to previous issue)
 - [ ] Avoid printing individual verses in separate `print` calls.
