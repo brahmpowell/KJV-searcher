@@ -2,6 +2,16 @@
 
 A simple (King James) Bible searching algorithm written entirely in Python.  Written in 2015 as a practice project for advancing in Python.
 
+## Setup
+
+`python3 -m venv venv`
+`venv\Scripts\activate` for Windows or `source venv\bin\activate` for mac
+`python3 -m pip install --upgrade pip`
+`python3 -m pip install --upgrade setuptools` If you are on a mac with a new version of Python
+`python3 -m pip install -r requirements.txt`
+
+## Usage 
+
 Running `from Runit.Searches import *` will load the searching functions.  WARNING: As always, be careful using `import *`.  To be safe, you may want to `import Search_Functions as sf` instead.
 
 `findW("words separated by spaces", casesensitive=False, bk=None)` searches for a word or list of words, not in any particular order.  The `bk` parameter, if None, will cause all books of the Bible to be searched.  If `bk='OT'` or `bk='ot'`, only the Old Testament will be searched (same with `'nt'` or `'NT'` for the New Testament).  To search through only one book, set `bk` to the name of that book.  To search through a list of books, set `bk` to a list of book names.

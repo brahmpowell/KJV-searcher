@@ -7,3 +7,6 @@ __pycache__/
 # weird files
 _DS_Store
 __.DS_Store
+
+# envs
+venv*
